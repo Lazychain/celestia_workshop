@@ -1,0 +1,52 @@
+[dependencies]
+forge-std = "0.2.0"
+
+[profile.default]
+solc_version = '0.8.25'
+src = "src"
+out = "out"
+libs = ["lib"]
+
+remappings = [
+    '@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/',
+    '@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/',
+    'forge-std/=lib/forge-std/src/',
+]
+
+evm_version = 'paris'
+extra_output = [
+    "abi",
+    "evm.bytecode",
+    "evm.deployedBytecode",
+    "evm.methodIdentifiers",
+]
+bytecode_hash = 'ipfs'
+deny_warnings = true
+fail_on_revert = true
+verbosity = 2
+chain_id = 31337
+
+# Fuzz
+[fuzz]
+runs = 50
+dictionary_weight = 80
+
+[invariant]
+runs = 1000
+depth = 128
+fail_on_revert = true
+
+# Format
+[fmt]
+single_line_statement_blocks = 'multi'
+multiline_func_header = 'attributes_first'
+sort_imports = true
+contract_new_lines = true
+quote_style = 'double'
+line_length = 120
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+number_underscore = "preserve"
+wrap_comments = false
+ignore = []
