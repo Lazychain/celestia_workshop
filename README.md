@@ -20,7 +20,9 @@ Whether you're building a social platform, a gaming application, or another cons
 
 ## Architecture
 
-We are going to use a **modular blockchain** using **Sovereign Rollups** using **Geth** as **Execution Layer**, **Astria** as **Settlement and consensus** layer and **Celestia** as **Data Availability** layer. You can find details about our architecture on [docs](https://github.com/Lazychain/docs/blob/main/learn/adr/0013-astria.md#architecture).
+We are going to use a **modular blockchain** using **Sovereign Rollups** using **Geth** as **Execution Layer**, **Astria** as **Settlement and consensus** layer and **Celestia** as **Data Availability Sampling** layer. 
+
+You can find details about our architecture on [docs](https://github.com/Lazychain/docs/blob/main/learn/adr/0013-astria.md#architecture).
 
 ## Hands on LazyDev, in control
 
