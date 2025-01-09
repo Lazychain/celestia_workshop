@@ -13,6 +13,7 @@ Since **Celestine Sloth Society** have his NFT Collection on other blockchains, 
 **App Specific Sequencing** (ASS) powered by Astria's sequencing layer maximizes the value that flows back to the Sloth community.
 
 Our primary goal is to demonstrate that blockchain technology can be accessible and useful for everyday applications.
+
 We're building a platform for developers to create applications users actually want to use, combined with distribution to an existing crypto native user base.
 
 Whether you're building a social platform, a gaming application, or another consumer service, Lazychain provides the infrastructure and community support you need `LazyDev`.
@@ -24,15 +25,21 @@ We are going to use a **modular blockchain** using **Sovereign Rollups** using *
 ## Hands on LazyDev, in control
 
 As your first assignment, we encourage you to do a `NFT staking contract` for the campaign `Sleep2Earn`.
+
 But first, let me tell you how is a normal day in Lazy development department.
 
 A `Product manager` work with the Lazy community via `questions` or `polls` and `voting governance` to select most relevant needs.
+
 Then with the `CEO` establish a course of decisions and funding.
+
 With the help of `Analist, Technical leader and a UX` give life to a project on `docs`.
+
 This project is taken by the `Project Manager` and the `Technical Leader` and create all the `Tasks` need it and a `Plan` to try to fulfill.
 
 The day has come to `Sleep2Earn` campaign with `NFT staking contract`.
-Your `Technical leader` create and initialize a project with all the tech need it. 
+
+Your `Technical leader` create and initialize a project with all the tech need it.
+
 It assigns you some issues according to a `Plan`.
 
 **Are you ready for what it takes the challenge?**
