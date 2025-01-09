@@ -40,7 +40,9 @@ It assigns you some issues according to a `Plan`.
 ## Tasks
 
 Your first `Task` is to read all the specification design and learn about the project scope and boundaries.
-You can read here on the local [docs](docs/specifications.md).
+
+- Understand how the [architecture](docs/specifications.md#architecture) works.
+- Understand what is expected for you to [do](docs/specifications.md#integration) according to the specifications.
 
 ### User Story 001
 
