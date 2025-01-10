@@ -106,31 +106,67 @@ The `NFT Staking` contract is the responsible for:
 
 ### Contract
 
-- Struct UserData:
-  - address
-  - rewards
-  - Map: <TokenId: number, staking_height: number>
+- enum Status:
+  - staked,
+  - unstaked,
 
-- users: Map<user: address, data: UserData>
+- Struct UserData:
+  - address, # address that identify the owner (msg.sender)
+  - rewards, # Acumulated reward points, only updated when `claim` successful.
+  - Map: <TokenId: number, data: TokenData> # user token mapping data
+
+- Struct TokenData:
+  - status: Status,
+  - stakingHeight: number, # Starting height use on rewards calculation. Start when the owner `stake` and transfer ownership.
+  - unstakingHeight: number, # Ending height use on rewards calculation. Once `unstake` it, no more rewards will be counted.
+  - claimHeight: number, # Once this height passes, the owner can recover its `staked` NFT.
+
+- users: Map<user: address, data: UserData> # general users data
+
+- whitelist: Array<address> # list of smart contracts that can `interact` with `user` points.
 
 - EXECUTE:OWNER:constructor(nft:address, `rewardRate`: number)
   - Store the owner.
   - set `erc721` address.
   - Set `rewardRate`.
 
-- EXECUTE:ANYONE:stake(tokenId: uint256) -> Result(result:boolean, error)
+- EXECUTE:ANYONE:startStaking(tokenId: uint256) -> Result(result:boolean, error)
   - check tokenId ownership.
     - Throw error `NotYourNFTToken`
   - check `fee` (funds sent)
     - Throw error `InsuficientFundsSent`
   - Set as owner of `tokenId` using `IERC721` interface.
-  - Update `users` with `UserData`.
+  - Update `users` with `UserData`(stakingHeight).
+
+- EXECUTE:ANYONE:stopStaking(tokenId: uint256) -> Result(result:boolean, error)
+  - check tokenId ownership on `users`.
+    - Throw error `NotYourNFTToken`
+  - check `fee` (funds sent)
+    - Throw error `InsuficientFundsSent`
+  - Update `UserData` (unstakingHeight).
 
 - EXECUTE:ANYONE:unstake(tokenId: uint256) -> Result(result:boolean, error)
   - check tokenId ownership on `users`.
     - Throw error `NotYourNFTToken`
   - check `fee` (funds sent)
     - Throw error `InsuficientFundsSent`
+  - check `current heigth - user.claimHeight` > 0
+    - Throw error `ClaimNotReady`
   - Return as owner of `tokenId` using `IERC721` interface.
-  - Calculate ([current_height - initial_height] * `rewardRate`) and update `user` reward.
+  - Calculate ([unstakingHeight - stakingHeight] * `rewardRate`) and update `user` reward.
   - Update `UserData` (ownership and rewards).
+
+- EXECUTE:ANYONE:consume(user: address) -> Result(result:boolean, error)
+  - Check if sender is on whitelist
+    - Throw error `Unauthorized`
+  - update `user` reward acummulator.
+
+- EXECUTE:OWNER:addToWhitelist(address:address)
+  - Check if owner.
+    - Throw error `Unauthorized`.
+  - Update whitelist.
+
+- EXECUTE:OWNER:removeFromWhitelist(address:address)
+  - Check if owner.
+    - Throw error `Unauthorized`.
+  - Update whitelist.

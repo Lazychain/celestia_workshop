@@ -20,7 +20,7 @@ Whether you're building a social platform, a gaming application, or another cons
 
 ## Architecture
 
-We are going to use a **modular blockchain** using **Sovereign Rollups** using **Geth** as **Execution Layer**, **Astria** as **Settlement and consensus** layer and **Celestia** as **Data Availability Sampling** layer. 
+We are going to use a **modular blockchain** using **Sovereign Rollups** using **Geth** as **Execution Layer**, **Astria** as **Settlement and consensus** layer and **Celestia** as **Data Availability Sampling** layer.
 
 You can find details about our architecture on [docs](https://github.com/Lazychain/docs/blob/main/learn/adr/0013-astria.md#architecture).
 
@@ -55,7 +55,7 @@ Your first `Task` is to read all the specification design and learn about the pr
 
 ### User Story 001
 
-Read the [001 NFT Staking](docs/stories/0001-nft-staking.md) User Story.
+Read the [001 NFT Start Staking](docs/stories/0001-nft-start-staking.md) User Story.
 
 Challenge:
 
@@ -67,12 +67,24 @@ Challenge:
 
 ### User Story 002
 
-Read the [002 NFT Staking](docs/stories/0002-nft-unstaking.md) User Story.
+Read the [002 NFT Stop Staking](docs/stories/0002-nft-stop-staking.md) User Story.
 Challenge:
 
 - Do the same tasks as `User Story 0001`
 - Deploy and run the tests over local blockchain.
 
-### Deployment on Lazy testnet
+### User Story 003
 
-Soon.
+Read the [003 NFT recover Staking](docs/stories/0003-nft-unstaking.md) User Story.
+Challenge:
+
+- Do the same tasks as `User Story 0001`
+- Deploy and run the tests over testnet blockchain.
+
+### User Story 004
+
+Read the [004 User Points Consumeed](docs/stories/0004-exchange-points-erc20.md) User Story.
+Challenge:
+
+- Do the same tasks as `User Story 0001`.
+- Create a PR and wait for reviews!!!
