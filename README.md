@@ -38,7 +38,7 @@ With the help of `Analist, Technical leader and a UX` give life to a project on 
 
 This project is taken by the `Project Manager` and the `Technical Leader` and create all the `Tasks` need it and a `Plan` to try to fulfill.
 
-The day has come to `Sleep2Earn` campaign with `NFT staking contract`.
+The day has come to `Stake2Earn` campaign with `NFT staking contract`.
 
 Your `Technical leader` create and initialize a project with all the tech need it.
 
@@ -88,3 +88,29 @@ Challenge:
 
 - Do the same tasks as `User Story 0001`.
 - Create a PR and wait for reviews!!!
+
+### Tips
+
+```shell
+forge test --match-contract ComplicatedContractTest --match-test test_Deposit -vvvv
+```
+
+```shell
+clear && forge coverage --report lcov && genhtml -o report --branch-coverage lcov.info --ignore-errors inconsistent --ignore-errors category
+```
+
+```shell
+forge coverage --no-match-path 'test/invariant/**/*.sol' --report lcov
+lcov --extract lcov.info --rc branch_coverage=1 --rc derive_function_end_line=0 -o lcov.info 'src/*' 
+genhtml lcov.info --rc branch_coverage=1 --rc derive_function_end_line=0 -o coverage
+```
+
+```shell
+source .env
+anvil
+```
+
+```shell
+source .env
+forge script script/Deploy.s.sol:Deploy --fork-url $CHAIN_RPC --broadcast
+```
