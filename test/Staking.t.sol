@@ -41,21 +41,7 @@ contract StakingTest is Test {
     //      What parameters needs the constructor according to the specifications documents?
     //      What need are the `sannity` checks that I must consider?
 
-    // Test 1.1: Constructor Parameters
-    /**
-    Scenario: Successful constructor initialization with valid parameters
-        Given I provide a valid NFT address
-        And I set a reward rate greater than 0
-        And I set a fee amount greater than or equal to 0
-        When I deploy the contract with these parameters
-        Then the contract should be deployed successfully
-        And the NFT address should be set correctly
-        And the reward rate should be set correctly
-        And the fee amount should be set correctly
-     */
-    function test_ConstructorSuccess() public view {}
-
-    // Test 1.2: Sanity Checks - Zero Address
+    // Test 1.1: Sanity Checks - Zero Address
     // Assertion: Verify the constructor reverts with a zero address for 0001-nft-start-locking.md.
     /**
     Scenario: Constructor error - Missing NFT address
@@ -72,7 +58,7 @@ contract StakingTest is Test {
      */
     function test_Constructor_ZeroAddressSanity() public {}
 
-    // Test 1.3: Sanity Checks - Invalid Reward Rate
+    // Test 1.2: Sanity Checks - Invalid Reward Rate
     // Assertion: Verify the constructor reverts with an invalid (e.g., negative) rewardRate.
     /**
     Scenario: Constructor error - Invalid reward rate (less than or equal to 0)
@@ -82,28 +68,27 @@ contract StakingTest is Test {
      */
     function test_Constructor_InvalidRewardRateSanity() public {}
 
+    // Test 1.3: Constructor Parameters
+    /**
+    Scenario: Successful constructor initialization with valid parameters
+        Given I provide a valid NFT address
+        And I set a reward rate greater than 0
+        And I set a fee amount greater than or equal to 0
+        When I deploy the contract with these parameters
+        Then the contract should be deployed successfully
+        And the NFT address should be set correctly
+        And the reward rate should be set correctly
+        And the fee amount should be set correctly
+     */
+    function test_ConstructorSuccess() public {}
+
     // ======================
     // Step 2: lock Function Tests
     //      What parameters needs the `Lock` function according to the specifications documents.
     //      What need are the `sannity` checks that I must consider?
     //      How will I calculate the rewards earning?
 
-    // Test 2.1: Successful locking
-    // Assertion: Verify locking is successfully initiated.
-    /**
-    Scenario: Lock NFT for staking
-        Given I have an NFT
-        And I am the owner of the NFT
-        When I lock the NFT for staking with a valid period
-        And I pay the required fees
-        Then the NFT should be locked for staking
-        And I should be able to view my NFT ownership    
-     */
-    function test_Lock_Success() public {}
-
-    // Test 2.2: Function Parameters
-    // Assertion: Verify lock requires tokenId as a parameter.
-    // Test 2.3: Token Ownership
+    // Test 2.1: Token Ownership
     // Assertion: Verify only the token owner can start locking.
     /**
     Scenario: Lock NFT that I do not own
@@ -113,18 +98,19 @@ contract StakingTest is Test {
      */
     function test_Lock_TokenOwnership() public {}
 
-    // Test 2.4: Fee Payment
+    // Test 2.2: Fee Payment
     // Assertion: Verify sufficient funds are required for the transaction.
     /**  
     Scenario: Lock NFT with insufficient fees
         Given I have an NFT
         And I am the owner of the NFT
+        And I have granted the staking contract my NFT allowance
         When I lock the NFT for staking with insufficient fees
         Then an InsuficientFundsSent error should be thrown
     */
     function test_Lock_FeePayment() public {}
 
-    // Test 2.5: NFT Not Found
+    // Test 2.3: NFT Not Found
     // Assertion: Verify the contract reverts when attempting to Lock a non-existent NFT.
     /** 
     Scenario: Lock NFT that does not exist
@@ -133,6 +119,20 @@ contract StakingTest is Test {
         Then an InvalidTokenId error should be thrown
      */
     function test_NFTNotFound() public {}
+
+    // Test 2.4: Successful locking
+    // Assertion: Verify locking is successfully initiated.
+    /**
+    Scenario: Lock NFT for staking
+        Given I have an NFT
+        And I am the owner of the NFT
+        And I have granted the staking contract my NFT allowance
+        When I lock the NFT for staking with a valid period
+        And I pay the required fees
+        Then the NFT should be locked for staking
+        And I should be able to view my NFT ownership to staking contract   
+     */
+    function test_Lock_Success() public {}
 
     // Test 2.6: Edge Case - locking Already Started
     // Assertion: Verify the contract reverts when attempting to restart locking for an already locking NFT.
@@ -143,7 +143,7 @@ contract StakingTest is Test {
     Scenario: Lock NFT that is already staked
         Given I have an NFT that is already staked
         When I try to lock the NFT for staking
-        Then an AlreadyStaked error should be thrown    
+        Then an NotYourNFTToken error should be thrown    
      */
     function test_LockingAlreadyStarted() public {}
 
@@ -164,21 +164,11 @@ contract StakingTest is Test {
      */
     function test_LockDifferentPeriods() public {}
 
-    /**
-    Scenario: Points calculation for an invalid lock period
-        Given I have an NFT locked with an invalid period (e.g., ZERO_DAYS)
-        When I check my staking points
-        Then an error "InvalidPeriodForPointsCalculation" should be displayed
-
-    */
-    function test_LockInvalidPeriod() public {}
-
     // Test 2.8: Unlock - Reward Calculation Correctness
     /**
     Scenario Outline: Points calculation for valid lock periods
         Given I have an NFT locked for staking with a <period> period
-        And the current block height is <current_height>
-        And the NFT was locked at block height <lock_height>
+        And the NFT was locked for Period.ONE_DAY
         When I check my staking points
         Then my points should be calculated as <expected_points> based on the reward rate    
      */
