@@ -168,11 +168,11 @@ Feature: Unlock NFT
     When I call the unlockNFT function with my NFT's tokenId
     Then an error is thrown with the message "InsuficientFundsSent"
 
-  Scenario: Unlock NFT with invalid staking period
+  Scenario: Unlock NFT with invalid Time
     Given I am a user with an NFT that is staked
     And the staking period is not valid
     When I call the unlockNFT function with my NFT's tokenId
-    Then an error is thrown with the message "InvalidPeriod"
+    Then an error is thrown with the message "NFTPeriodNotReady"
 ```
 
 ### Acceptance Criteria

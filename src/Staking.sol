@@ -139,7 +139,32 @@ contract Staking is IStaking, ERC721Holder, Ownable {
      * @dev Function to recover an NFT.
      * @param _tokenId The ID of the NFT to recover.
      */
-    function unlock(uint256 _tokenId) public payable {}
+    function unlock(uint256 _tokenId) public payable {
+                // Check if token is locked
+        if (users[msg.sender][_tokenId].startHeight == 0) {
+            revert NFTNotLocked();
+        }
+        // check if Locked time has passed time
+        if (users[msg.sender][_tokenId].endHeight >= block.number) {
+            revert NFTPeriodNotReady();
+        }
+
+        /**
+         * @notice Require the user to have sent sufficient funds to cover the fees.
+         */
+        if (msg.value < fees) {
+            revert InsufficientFundsSent();
+        }
+
+        // Delete the key, similar to set tokenId = 0
+        delete users[msg.sender][_tokenId];
+
+        // Return to owner
+        nft.transferFrom(address(this), msg.sender, _tokenId);
+
+        // emit event
+        emit RecoverNFTSuccess();
+    }
 
     /**
      * @dev Function to consume rewards.

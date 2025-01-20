@@ -163,7 +163,7 @@ contract StakingTest is Test {
         // And I am the owner of the NFT
         assertEq(lnft.ownerOf(0), user1);
 
-        // And I have granted the staking contract my NFT allowance        
+        // And I have granted the staking contract my NFT allowance
         vm.prank(user1);
         lnft.approve(address(staking), 0);
         assert(lnft.getApproved(0) == address(staking));
@@ -172,7 +172,6 @@ contract StakingTest is Test {
         vm.prank(user1);
         vm.expectRevert(IStaking.InsufficientFundsSent.selector);
         staking.lock(0, IStaking.Period.ONE_DAY);
-
     }
 
     // Test 2.3: NFT Not Found
@@ -280,10 +279,10 @@ contract StakingTest is Test {
         Then an InvalidPeriod error should be thrown
      */
     function test_LockDifferentPeriods() public {
-       // this cant be done since `Period` is force as a type input with only 3 values.
+        // this cant be done since `Period` is force as a type input with only 3 values.
     }
 
-    // Test 2.8: Unlock - Reward Calculation Correctness
+    // Test 2.8: Lock - Reward Calculation Correctness
     /**
     Scenario Outline: Points calculation for valid lock periods
         Given I have an NFT locked for staking with a <period> period
@@ -327,27 +326,12 @@ contract StakingTest is Test {
     //  - What need are the `sannity` checks that I must consider?
     //  - How do I calculate the `rewards` earned?
 
-    // Test 3.1: Unlock - Successful Unlocking
-    // Assertion: Verify unlocking is successfully initiated for an NFT that is currently locking.
-    // Preconditions:
-    //  - An NFT with ongoing locking is used for testing.
-    /**
-    Scenario: Unlock NFT successfully
-        Given I am a user with an NFT that is staked
-        And I have sufficient funds to pay the fees
-        When I call the unlockNFT function with my NFT's tokenId
-        Then the NFT is unlocked
-        And the transaction is successful
-     */
-    function test_Unlock_Success() public {}
-
     /**
     Scenario: Unlock NFT that does not exist
         Given I am a user with a non-existent NFT
         When I call the unlockNFT function with the non-existent NFT's tokenId
         Then an error is thrown with the message "InvalidTokenId"
      */
-    function test_Unlock_NFT_doesnt_exist() public {}
 
     /**
     Scenario: Unlock NFT that I do not own
@@ -355,7 +339,6 @@ contract StakingTest is Test {
         When I call the unlockNFT function with the NFT's tokenId
         Then an error is thrown with the message "NotYourNFTToken"
      */
-    function test_Unlock_TokenOwnership() public {}
 
     /**
     Scenario: Unlock NFT that is not staked
@@ -363,8 +346,64 @@ contract StakingTest is Test {
         When I call the unlockNFT function with the NFT's tokenId
         Then an error is thrown with the message "NFTNotStaked"
     */
-    function test_Unlock_NFT_not_locked() public {}
+    function test_Unlock_NFT_not_locked() public {
+        // Ensure user1 balance can pay fees
+        deal(user1, 2 * fees);
 
+        // Then assert unstakingunlock is successful
+        vm.prank(user1);
+        vm.expectRevert(IStaking.NFTNotLocked.selector);
+        staking.unlock{value: fees}(0);
+
+    }
+
+    // Test 3.2: Unlock - NFT Period hasnt pass to Unlock
+    /** Scenario: Unlock NFT with invalid Time
+    Given I am a user with an NFT that is staked
+    And the staking period is not valid
+    When I call the unlockNFT function with my NFT's tokenId
+    Then an error is thrown with the message "NFTPeriodNotReady"
+    */
+    function test_Unlock_PeriodNotReady() public {
+        // Lazy721 mint an NFT tokenId == 0 and trnasfer to user1
+        lnft.safeMint(user1);
+        assertEq(lnft.balanceOf(user1), 1);
+        // Ensure user1 balance can pay fees
+        deal(user1, 2 * fees);
+
+        // user1 grants to staking contract to transfer
+        vm.prank(user1);
+        lnft.approve(address(staking), 0);
+        assert(lnft.getApproved(0) == address(staking));
+
+        // Given an Staking initialized contract with 1 staking
+        vm.prank(user1);
+        staking.lock{value: fees}(0, IStaking.Period.ONE_DAY);
+
+        // Assert staking initiated correctly
+        (uint256 startHeight, uint256 endHeight) = staking.users(user1, 0);
+        uint256 expectedEnd = vm.getBlockNumber() +
+            staking.lockHeights(IStaking.Period.ONE_DAY);
+        uint256 expectedReward = staking.lockHeights(IStaking.Period.ONE_DAY) *
+            staking.rewardRate();
+
+        assert(staking.rewards(user1) == expectedReward);
+        assert(startHeight == block.number);
+        assert(endHeight == expectedEnd);
+
+        // That the new onwer is the Staking contract
+        assert(lnft.ownerOf(0) == address(staking));
+        assert(lnft.balanceOf(user1) == 0);
+
+        // jump to future to the unlock time + 1
+        vm.roll(1);
+
+        // Then assert unstakingunlock is successful
+        vm.prank(user1);
+        vm.expectRevert(IStaking.NFTPeriodNotReady.selector);
+        staking.unlock{value: fees}(0);
+
+    }
     // Test 3.2: Unlock - Insufficient Funds for Fees
     // Assertion: Verify the contract reverts when attempting to Unlock without sufficient funds for fees.
     // Preconditions:
@@ -377,16 +416,104 @@ contract StakingTest is Test {
         When I call the unlockNFT function with my NFT's tokenId
         Then an error is thrown with the message "InsuficientFundsSent"    
      */
-    function test_Unlock_InsufficientFunds() public {}
+    function test_Unlock_InsufficientFunds() public {
+        // Lazy721 mint an NFT tokenId == 0 and trnasfer to user1
+        lnft.safeMint(user1);
+        assertEq(lnft.balanceOf(user1), 1);
+        // Ensure user1 balance can pay fees
+        deal(user1, 2 * fees);
 
+        // user1 grants to staking contract to transfer
+        vm.prank(user1);
+        lnft.approve(address(staking), 0);
+        assert(lnft.getApproved(0) == address(staking));
+
+        // Given an Staking initialized contract with 1 staking
+        vm.prank(user1);
+        staking.lock{value: fees}(0, IStaking.Period.ONE_DAY);
+
+        // Assert staking initiated correctly
+        (uint256 startHeight, uint256 endHeight) = staking.users(user1, 0);
+        uint256 expectedEnd = vm.getBlockNumber() +
+            staking.lockHeights(IStaking.Period.ONE_DAY);
+        uint256 expectedReward = staking.lockHeights(IStaking.Period.ONE_DAY) *
+            staking.rewardRate();
+
+        assert(staking.rewards(user1) == expectedReward);
+        assert(startHeight == block.number);
+        assert(endHeight == expectedEnd);
+
+        // That the new onwer is the Staking contract
+        assert(lnft.ownerOf(0) == address(staking));
+        assert(lnft.balanceOf(user1) == 0);
+
+        // jump to future to the unlock time + 1
+        vm.roll(endHeight + 1);
+
+        // When I call the unlockNFT function with my NFT's tokenId
+        // Then an error is thrown with the message "InsuficientFundsSent"    
+        vm.prank(user1);
+        vm.expectRevert(IStaking.InsufficientFundsSent.selector);
+        staking.unlock(0);
+    }
+
+    // Test 3.1: Unlock - Successful Unlocking
+    // Assertion: Verify unlocking is successfully initiated for an NFT that is currently locking.
+    // Preconditions:
+    //  - An NFT with ongoing locking is used for testing.
     /**
-    Scenario: Unlock NFT with invalid staking period
+    Scenario: Unlock NFT successfully
         Given I am a user with an NFT that is staked
-        And the staking period is not valid
+        And I have sufficient funds to pay the fees
         When I call the unlockNFT function with my NFT's tokenId
-        Then an error is thrown with the message "InvalidPeriod"    
+        Then the NFT is unlocked
+        And the transaction is successful
      */
-    function test_Unlock_Invalid_unlock_Period() public {}
+    function test_Unlock_Success() public {
+        // Lazy721 mint an NFT tokenId == 0 and trnasfer to user1
+        lnft.safeMint(user1);
+        assertEq(lnft.balanceOf(user1), 1);
+        // Ensure user1 balance can pay fees
+        deal(user1, 2 * fees);
+
+        // user1 grants to staking contract to transfer
+        vm.prank(user1);
+        lnft.approve(address(staking), 0);
+        assert(lnft.getApproved(0) == address(staking));
+
+        // Given an Staking initialized contract with 1 staking
+        vm.prank(user1);
+        staking.lock{value: fees}(0, IStaking.Period.ONE_DAY);
+
+        // Assert staking initiated correctly
+        (uint256 startHeight, uint256 endHeight) = staking.users(user1, 0);
+        uint256 expectedEnd = vm.getBlockNumber() +
+            staking.lockHeights(IStaking.Period.ONE_DAY);
+        uint256 expectedReward = staking.lockHeights(IStaking.Period.ONE_DAY) *
+            staking.rewardRate();
+
+        assert(staking.rewards(user1) == expectedReward);
+        assert(startHeight == block.number);
+        assert(endHeight == expectedEnd);
+
+        // That the new onwer is the Staking contract
+        assert(lnft.ownerOf(0) == address(staking));
+        assert(lnft.balanceOf(user1) == 0);
+
+        // jump to future to the unlock time + 1
+        vm.roll(endHeight + 1);
+
+        // Then assert unstakingunlock is successful
+        vm.prank(user1);
+        staking.unlock{value: fees}(0);
+
+        (startHeight, endHeight) = staking.users(user1, 0);
+        assert(staking.rewards(user1) == expectedReward);
+        assert(startHeight == 0);
+        // That the new onwer is the user1
+        assert(lnft.ownerOf(0) == address(user1));
+        assert(lnft.balanceOf(user1) == 1);
+    }
 
     // ======================
     // Step 4: Whitelisting Tests
