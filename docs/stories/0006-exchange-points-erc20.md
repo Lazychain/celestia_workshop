@@ -169,7 +169,7 @@ Feature: User Points Exchange for ERC-20
 * The `ExchangeRewardsSuccess` event is correctly emitted and can be verified on the blockchain.
 * All error scenarios correctly throw their respective errors and are handled gracefully.
 
-# Description
+## Description
 
 ### User Points Exchange for ERC-20 Flow Explanation
 

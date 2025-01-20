@@ -50,12 +50,12 @@ It assigns you some issues according to a `Plan`.
 
 Your first `Task` is to read all the specification design and learn about the project scope and boundaries.
 
-- Understand how the [architecture](docs/specifications.md#architecture) works.
-- Understand what is expected for you to [do](docs/specifications.md#integration) according to the specifications.
+- Understand how the [architecture](docs/specifications/architecture.md) works.
+- Understand what is expected for you to do with [lock-unlock](docs/specifications/staking.md) and [exchange](docs/specifications/exchange.md) according to the specifications.
 
 ### User Story 001
 
-Read the [001 NFT Start Staking](docs/stories/0001-nft-start-staking.md) User Story.
+Read the [001 NFT Start Staking](docs/stories/0001-nft-stake-lock.md) User Story.
 
 Challenge:
 
@@ -67,7 +67,7 @@ Challenge:
 
 ### User Story 002
 
-Read the [002 NFT Stop Staking](docs/stories/0002-nft-stop-staking.md) User Story.
+Read the [002 NFT Stop Staking](docs/stories/0002-nft-stake-unlock.md) User Story.
 Challenge:
 
 - Do the same tasks as `User Story 0001`
