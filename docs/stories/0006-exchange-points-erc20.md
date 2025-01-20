@@ -168,3 +168,63 @@ Feature: User Points Exchange for ERC-20
 * A technical review of the implementation has been conducted and approved.
 * The `ExchangeRewardsSuccess` event is correctly emitted and can be verified on the blockchain.
 * All error scenarios correctly throw their respective errors and are handled gracefully.
+
+# Description
+
+### User Points Exchange for ERC-20 Flow Explanation
+
+### **Step-by-Step Breakdown of `exchangeRewards` Functionality**
+
+#### **1. Prerequisites**
+
+* **User**: Has a wallet address (`_user`) with sufficient points for exchange.
+* **Contract**:
+  * **Staking Contract (`staking`)**: Holds user rewards balance.
+  * **ERC-20 Token Contract (`token`)**: Manages ERC-20 token transfers.
+  * **Exchange Contract**: Facilitates points to ERC-20 token exchanges.
+
+#### **2. `exchangeRewards` Function Call**
+
+* **Input Parameters**:
+  * `_user`: Address of the user exchanging rewards.
+  * `_points`: Number of points to exchange for ERC-20 tokens.
+* **Fees**:
+  * **Requirement**: Sender must provide sufficient fees (`>= fees`).
+  * **Error Handling**: `InsuficientFundsSent` error thrown if fees are insufficient.
+
+#### **3. Validation Checks**
+
+##### **3.1 Sufficient Points Check**
+
+* **Query**: `staking.rewardsBalance(_user) >= _points`
+* **Pass**: Proceed to next check.
+* **Fail**: Throw `InsuficientPointsToExchange` error.
+
+##### **3.2 Sufficient ERC-20 Tokens Check**
+
+* **Query**: Contract's ERC-20 token balance `>= _points`
+* **Pass**: Proceed to exchange.
+* **Fail**: Throw `InsuficientTokensToExchange` error.
+
+#### **4. Exchange Execution**
+
+* **1. Consume Rewards**: Call `staking.consumeRewards(_user, _points)` to deduct points from user's balance.
+* **2. Transfer ERC-20 Tokens**: Transfer `_points` quantity of ERC-20 tokens from the contract to `_user`.
+* **3. Emit Success Event**: Trigger `ExchangeRewardsSuccess` event to notify of successful exchange.
+
+#### **5. Error Scenarios and Handling**
+
+| **Error** | **Trigger** | **Handling** |
+| --- | --- | --- |
+| `InsuficientFundsSent` | Insufficient fees | Throw error, revert transaction. |
+| `InsuficientPointsToExchange` | User lacks sufficient points | Throw error, revert transaction. |
+| `InsuficientTokensToExchange` | Contract lacks sufficient ERC-20 tokens | Throw error, revert transaction. |
+
+#### **6. Post-Exchange State**
+
+* **User**:
+  * Updated rewards balance (reduced by `_points`).
+  * Increased ERC-20 token balance (by `_points`).
+* **Contract**:
+  * Updated ERC-20 token balance (reduced by `_points`).
+  * Emits `ExchangeRewardsSuccess` event.

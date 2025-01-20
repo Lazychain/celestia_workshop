@@ -250,3 +250,51 @@ Feature: Remove from Whitelist
 * The functions are reviewed and approved by a peer.
 * The functions are deployed to the testnet and mainnet.
 * The functions are verified to work correctly on the testnet and mainnet.
+
+## Description
+
+### Whitelisting Mechanism Explanation
+
+### **Overview**
+
+The whitelisting mechanism in `Staking.sol` allows the contract owner to manage a list of authorized accounts that can interact with user points. This ensures controlled access to sensitive operations.
+
+### **Step-by-Step Breakdown**
+
+#### **1. Adding an Account to the Whitelist**
+
+* **Function:** `addToWhitelist(address account)`
+* **Caller:** Must be the contract **owner**
+* **Input:** `account` (address to be added)
+* **Process:**
+ 1. **Authorization Check**: Verify `msg.sender` is the **owner**.
+  * **Failure:** Throw **Unauthorized** error.
+ 2. **Account Validation**: Implicitly, the contract assumes the account is valid if it's a properly formatted Ethereum address.
+ 3. **Duplicate Check**: Verify the `account` is not already in the **whitelist**.
+  * **Failure (Implicit in Code Structure):** Though not explicitly shown, adding a duplicate should ideally throw an **AccountAlreadyInWhitelist** error (as per the defined error types). However, the provided code snippet does not explicitly handle this scenario; it simply adds or updates the whitelist without checking for duplicates.
+ 4. **Add to Whitelist**: Update the **whitelist** mapping with the new `account`.
+* **Outcome:** The `account` is successfully added to the **whitelist**, enabling it to interact with user points.
+
+#### **2. Removing an Account from the Whitelist**
+
+* **Function:** `removeFromWhitelist(address account)`
+* **Caller:** Must be the contract **owner**
+* **Input:** `account` (address to be removed)
+* **Process:**
+ 1. **Authorization Check**: Verify `msg.sender` is the **owner**.
+  * **Failure:** Throw **Unauthorized** error.
+ 2. **Account Existence Check**: Verify the `account` exists in the **whitelist**.
+  * **Failure:** Throw **AccountNotInWhitelist** error.
+ 3. **Remove from Whitelist**: Update the **whitelist** mapping to remove the specified `account`.
+* **Outcome:** The `account` is successfully removed from the **whitelist**, revoking its access to interact with user points.
+
+### **Error Handling and Security Considerations**
+
+* **Unauthorized Access**: Thrown when a non-owner attempts to add or remove an account.
+* **Account Already in Whitelist**: Ideally should be thrown when attempting to add a duplicate account (though not explicitly handled in the provided `addToWhitelist` snippet).
+* **Account Not in Whitelist**: Thrown when attempting to remove a non-existent account from the whitelist.
+
+### **Integration with NFT Staking**
+
+* The whitelisting mechanism is designed to work in conjunction with the NFT staking functionality, ensuring that only authorized accounts can perform sensitive operations related to staked NFTs.
+* The specifics of how these interactions are managed (e.g., which operations are restricted to whitelisted accounts) are not detailed in the provided snippets but are crucial for the overall security and functionality of the contract.

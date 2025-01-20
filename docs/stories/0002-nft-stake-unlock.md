@@ -213,3 +213,46 @@ Feature: Unlock NFT
 8. The `unlockNFT` function has been tested for edge cases and updated as necessary.
 9. The `unlockNFT` function has been tested for contract events and updated as necessary.
 10. The `unlockNFT` function has been tested for staking period and updated as necessary.
+
+## Description
+
+### Unlock NFT Functionality Explanation
+
+### Step-by-Step Breakdown of `unlockNFT` Function
+
+```markdown
+#### **Step 1: Function Call & Input Validation**
+* The user calls the `unlockNFT` function, passing the `tokenId` of the NFT to be unlocked.
+* **Validation Check**: The function verifies if the `tokenId` exists in the contract's NFT registry.
+ + **Success**: Proceeds to the next step.
+ + **Failure**: Throws an **`InvalidTokenId`** error.
+
+#### **Step 2: Ownership Verification**
+* The function checks if the caller (user) is the rightful owner of the NFT associated with the provided `tokenId`.
+ + **Success**: Proceeds to the next step.
+ + **Failure**: Throws a **`NotYourNFTToken`** error.
+
+#### **Step 3: Staking Status Check**
+* The contract verifies if the NFT (identified by `tokenId`) is currently in a staked state.
+ + **Success**: Proceeds to the next step.
+ + **Failure**: Throws an **`NFTNotStaked`** error.
+
+#### **Step 4: Fee Sufficiency Check**
+* The function checks if the user has sent sufficient funds to cover the fees associated with unlocking the NFT.
+ + **Success**: Proceeds to the next step.
+ + **Failure**: Throws an **`InsuficientFundsSent`** error.
+
+#### **Step 5: Update NFT Status & Calculate Rewards (If Applicable)**
+* Updates the NFT's status to "unlocked" in the contract's registry.
+* **Note**: The provided code snippet does not explicitly mention reward calculation upon unlocking. However, typically, this step might also involve calculating and possibly distributing rewards based on the staking duration and reward rate, if such a mechanism is implemented in the full contract.
+
+#### **Step 6: Emit Success Event & Return**
+* Emits an **`UnlockNFTSuccess`** event to notify listeners of the successful unlocking.
+* Returns a success indicator to the caller, confirming the NFT has been unlocked.
+```
+
+### Additional Considerations & Potential Next Steps
+
+* **Error Handling for Staking Period**: The provided scenarios and code do not explicitly cover the case where the staking period is not valid at the time of unlocking. Ensure this scenario is handled appropriately in the full implementation.
+* **Security Audits & Testing**: Perform thorough security audits and testing to ensure the `unlockNFT` function, along with the entire contract, is secure and functions as expected under various conditions.
+* **Documentation & User Guidance**: Maintain clear, up-to-date documentation for developers and end-users, outlining the process, requirements, and any specific considerations for unlocking NFTs within the platform.

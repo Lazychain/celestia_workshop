@@ -190,3 +190,54 @@ Feature: Consume Rewards
 * An InsuficientRewardsPoints error is thrown when the user attempts to consume rewards with insufficient balance.
 * A NotInWhitelist error is thrown when the user attempts to consume rewards when not on the whitelist.
 * An InsuficientFundsSent error is thrown when the user attempts to consume rewards with insufficient funds sent.
+
+## Description
+
+### NFT Stake and Consume Rewards Flow Explanation
+
+### **Step-by-Step Breakdown**
+
+#### **1. User Initialization**
+
+* **Precondition**: User has an NFT and is interacting with the Staking contract.
+* **Action**: User's data is stored in the `users` mapping (`address => UserData`) if not already present.
+* **State Change**: `UserData` struct is initialized for the user, including `rewards` (initially 0) and a `tokens` mapping for NFT data.
+
+#### **2. Locking NFT (Staking)**
+
+* **Precondition**: User owns the NFT and has sufficient funds for fees.
+* **Action**: User calls `startStaking()` with the NFT's token ID and chosen staking period.
+* **State Change**:
+  * Fees are deducted from the user.
+  * NFT is locked (transferred to the contract or marked as staked).
+  * `TokenData` (period, start block, end block) is created and linked to the user's `UserData`.
+
+#### **3. Earning Rewards**
+
+* **Passive Action**: As blocks are mined, the user earns rewards based on the `rewardRate` and staking period.
+* **State Change**: The user's `rewards` balance is updated periodically (not in real-time, but upon next interaction requiring balance check).
+
+#### **4. Unlocking NFT (Unstaking)**
+
+* **Precondition**: User's NFT is staked and the staking period has ended (or user chooses to recover early).
+* **Action**: User calls `stopStaking()` or `recover()` with the NFT's token ID.
+* **State Change**:
+  * NFT is unlocked (transferred back to the user or marked as unstaked).
+  * `TokenData` is updated or removed from the user's `UserData`.
+
+#### **5. Consuming Rewards**
+
+* **Precondition**: User has a sufficient `rewards` balance and is on the `whitelist`.
+* **Action**: User calls `consumeRewards()` specifying the points to consume.
+* **State Change**:
+  * User's `rewards` balance is decreased by the consumed amount.
+  * `ConsumeRewardsSuccess` event is emitted.
+  * Fees are deducted for the transaction.
+
+### **Error Handling Scenarios**
+
+* **Insufficient Funds**: Thrown during staking or consuming rewards if user doesn't send enough ether.
+* **Not in Whitelist**: Thrown when attempting to consume rewards without being on the whitelist.
+* **Insufficient Rewards Points**: Thrown when trying to consume more rewards than available.
+* **User Does Not Exist**: Thrown for non-initialized users attempting to interact with their non-existent data.
+* **NFT Not Staked**: Thrown when trying to unstake an NFT that's not currently staked by the user.

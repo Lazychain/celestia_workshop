@@ -296,3 +296,61 @@ Feature: NFT Staking Points Calculation Error Handling
 - All bugs and issues have been resolved.
 - The feature is fully documented, including user documentation and technical documentation.
 - The feature has been deployed to production and is available for use by users.
+
+## Description
+
+### NFT Stake Lock Functionality Explanation
+
+#### **Step 1: Constructor Initialization**
+
+* **Purpose:** Initializes the NFT Stake Lock contract with essential parameters.
+* **Parameters:**
+  * `_nftAddress`: The address of the ERC721 NFT contract.
+  * `_rewardRate`: The rate at which rewards are generated per block height increase while staking.
+  * `_feeAmount`: The fee required for locking NFTs.
+* **Validation:**
+  * Ensures `_nftAddress` is not empty and not set to zero.
+  * Verifies `_rewardRate` is greater than 0.
+  * Checks `_feeAmount` is not negative (can be 0).
+
+#### **Step 2: Locking an NFT for Staking**
+
+* **Function:** `lock(uint256 tokenId, uint256 period)`
+* **Purpose:** Locks a specified NFT for a defined staking period.
+* **Parameters:**
+  * `tokenId`: The ID of the NFT to be locked.
+  * `period`: The duration for which the NFT is locked (e.g., ONE_DAY, SEVEN_DAYS, TWENTY_ONE_DAYS).
+* **Validation & Actions:**
+
+ 1. **Token Existence & Ownership**: Verifies the `tokenId` exists and is owned by the user.
+ 2. **Staking Status**: Checks if the NFT is not already staked.
+ 3. **Fee Payment**: Ensures the transaction includes sufficient fees (`_feeAmount`).
+ 4. **Period Validity**: Validates the chosen `period` is one of the accepted durations.
+ 5. **Lock NFT**: Transfers NFT ownership to the contract and updates the user's staking data (start time and period).
+
+#### **Step 3: Calculating Staking Points**
+
+* **Trigger:** Occurs when a user checks their staking points.
+* **Calculation Basis:**
+  * **Reward Rate**: The contract's set `_rewardRate`.
+  * **Staking Duration**: The time elapsed since the NFT was locked until the current block height.
+* **Points Calculation:**
+  * `points = (currentBlockHeight - lockBlockHeight) * rewardRate`
+
+#### **Step 4: Error Handling**
+
+* **Scenarios:**
+  * Attempting to lock a non-existent, already staked, or non-owned NFT.
+  * Insufficient fees or invalid period selection.
+  * System errors during points calculation (e.g., invalid period for calculation).
+* **Response:** Throws specific, informative errors for each scenario to guide user correction.
+
+#### **Step 5: Deployment and Usage**
+
+* **Pre-deployment:**
+  * Full implementation and testing of the feature.
+  * Review and approval by the product owner.
+  * QA validation.
+* **Post-deployment:**
+  * The feature is live and accessible to users.
+  * Comprehensive documentation (user and technical) is available.
