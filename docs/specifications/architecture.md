@@ -31,7 +31,7 @@ flowchart TB
 
     subgraph Astria["Astria Stack"]
         Composer --> Concensus
-        Concensus --> Condutor
+        Concensus --> Conductor
 
 
     end
@@ -42,7 +42,7 @@ flowchart TB
     RK_SC_721 -- Send [Lock Period] --> RK_SC_721_STAKE
     RK_SC_721_STAKE --> Composer 
     Celestia <--> Astria
-    Condutor --> RK
+    Conductor --> RK
 ```
 
 ### Components
@@ -61,7 +61,7 @@ flowchart TB
 - Astria (Astria Stack): A component that interacts with Celestia and is responsible for the Astria stack, which includes:
   - Composer: A component that interacts with the Stake/unstake smart contract.
   - Concensus: A component that interacts with the Composer and is responsible for achieving consensus.
-  - Condutor: A component that interacts with the Concensus and is responsible for conducting or managing the flow of data.
+  - Conductor: A component that interacts with the Concensus and is responsible for conducting or managing the flow of data.
 
 ### Interactions
 
@@ -71,7 +71,7 @@ flowchart TB
 4. The ERC721 smart contract sends a transaction to the Stake / Unstake smart contract, specifying a lock period.
 5. The Stake/unstake smart contract interacts with the Astria Composer component.
 6. Celestia and Astria interact with each other for data availability and storage.
-7. The Condutor component interacts with the LazyChain RollUp to manage or conduct the flow of data.
+7. The Conductor component interacts with the LazyChain RollUp to manage or conduct the flow of data.
 
 ## Sequence Diagram
 

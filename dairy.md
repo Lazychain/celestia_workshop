@@ -27,19 +27,3 @@ forge test
 forge coverage
 ```
 
-### Deploy local
-
-Console number 1
-
-```shell
-source .env.local
-anvil -m "$ANVIL_MNEMONIC" --block-base-fee-per-gas 0 --gas-price 0 --chain-id $ANVIL_CHAIN_ID
-```
-
-Console number 2
-
-```shell
-source .env.local
-export PRIVATE_KEY=$ANVIL_PK
-forge script script/Deploy.s.sol:StakingScript --fork-url $ANVIL_CHAIN_RPC --private-key $PRIVATE_KEY
-```

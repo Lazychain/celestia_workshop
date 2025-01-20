@@ -73,17 +73,25 @@ Challenge:
 - Do the same tasks as `User Story 0001`
 - Deploy and run the tests over local blockchain.
 
-### User Story 003
+### User Story 004
 
-Read the [003 NFT recover Staking](docs/stories/0003-nft-unstaking.md) User Story.
+Read the [004 Staking Whitelist](docs/stories/0004-nft-stake-whitelist.md) User Story.
 Challenge:
 
 - Do the same tasks as `User Story 0001`
 - Deploy and run the tests over testnet blockchain.
 
-### User Story 004
+### User Story 005
 
-Read the [004 User Points Consumeed](docs/stories/0004-exchange-points-erc20.md) User Story.
+Read the [004 User Points Consumed](docs/stories/0005-nft-stake-consume.md) User Story.
+Challenge:
+
+- Do the same tasks as `User Story 0001`.
+- Create a PR and wait for reviews!!!
+
+### User Story 006
+
+Read the [004 User Points Consumed](docs/stories/0006-exchange-points-erc20.md) User Story.
 Challenge:
 
 - Do the same tasks as `User Story 0001`.
@@ -91,9 +99,19 @@ Challenge:
 
 ### Tips
 
+#### Build contracts
+
 ```shell
-forge test --match-contract ComplicatedContractTest --match-test test_Deposit -vvvv
+forge build
 ```
+
+#### Debug contracts
+
+```shell
+forge test --match-contract StakingTest --match-test test_ImReady -vvvv
+```
+
+#### Generate coverage report
 
 ```shell
 clear && forge coverage --report lcov && genhtml -o report --branch-coverage lcov.info --ignore-errors inconsistent --ignore-errors category
@@ -104,6 +122,8 @@ forge coverage --no-match-path 'test/invariant/**/*.sol' --report lcov
 lcov --extract lcov.info --rc branch_coverage=1 --rc derive_function_end_line=0 -o lcov.info 'src/*' 
 genhtml lcov.info --rc branch_coverage=1 --rc derive_function_end_line=0 -o coverage
 ```
+
+#### Run local deploy
 
 ```shell
 source .env
