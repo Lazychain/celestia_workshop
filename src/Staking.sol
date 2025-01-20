@@ -75,19 +75,96 @@ contract Staking is IStaking, ERC721Holder, Ownable {
         address _nftAddress,
         uint256 _rewardRate,
         uint256 _feeAmount
-    ) Ownable(msg.sender) {}
+    ) Ownable(msg.sender) {
+        /**
+         * @notice Require the reward rate to be greater than zero.
+         */
+        if (_rewardRate <= 0) {
+            revert InvalidRewardRate();
+        }
+        /**
+         * @notice Require the NFT address to be a valid contract address.
+         */
+        if (_nftAddress == address(0) || _nftAddress.code.length == 0) {
+            revert MissingNftAddress();
+        }
+
+        nft = Lazy721(_nftAddress);
+        rewardRate = _rewardRate;
+        fees = _feeAmount;
+
+        lockHeights[Period.ONE_DAY] = 6480; // assuming 13 seconds per block, and 24*60*60/13 = 6480 blocks per day
+        lockHeights[Period.SEVEN_DAYS] = 45360; // 7 * 6480
+        lockHeights[Period.TWENTY_ONE_DAYS] = 136080; // 21 * 6480
+    }
 
     /**
      * @dev Function to start staking an NFT.
      * @param _tokenId The ID of the NFT to stake.
      */
-    function lock(uint256 _tokenId, Period _period) public payable {}
+    function lock(uint256 _tokenId, Period _period) public payable {
+        if (users[msg.sender][_tokenId].startHeight != 0) {
+            revert AlreadyLocked();
+        }
+
+        if (nft.ownerOf(_tokenId) != msg.sender) {
+            revert NotYourNFTToken();
+        }
+
+        /**
+         * @notice Require the user to have sent sufficient funds to cover the fees.
+         */
+        if (msg.value < fees) {
+            revert InsufficientFundsSent();
+        }
+
+        // transfer user token to this contract
+        // nft.approve(address(this), tokenId);
+        nft.safeTransferFrom(msg.sender, address(this), _tokenId);
+
+        // Update State to Locked and register tokenId to belongs to user
+        users[msg.sender][_tokenId].startHeight = block.number;
+        users[msg.sender][_tokenId].endHeight =
+            block.number +
+            lockHeights[_period];
+
+        // Update rewards points, so user can use it now.
+        uint256 points = (users[msg.sender][_tokenId].endHeight -
+            users[msg.sender][_tokenId].startHeight) * rewardRate;
+        rewards[msg.sender] += points;
+        emit LockNFTSuccess();
+    }
 
     /**
      * @dev Function to recover an NFT.
      * @param _tokenId The ID of the NFT to recover.
      */
-    function unlock(uint256 _tokenId) public payable {}
+    function unlock(uint256 _tokenId) public payable {
+                // Check if token is locked
+        if (users[msg.sender][_tokenId].startHeight == 0) {
+            revert NFTNotLocked();
+        }
+        // check if Locked time has passed time
+        if (users[msg.sender][_tokenId].endHeight >= block.number) {
+            revert NFTPeriodNotReady();
+        }
+
+        /**
+         * @notice Require the user to have sent sufficient funds to cover the fees.
+         */
+        if (msg.value < fees) {
+            revert InsufficientFundsSent();
+        }
+
+        // Delete the key, similar to set tokenId = 0
+        delete users[msg.sender][_tokenId];
+
+        // Return to owner
+        nft.transferFrom(address(this), msg.sender, _tokenId);
+
+        // emit event
+        emit RecoverNFTSuccess();
+    }
 
     /**
      * @dev Function to consume rewards.
